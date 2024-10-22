@@ -32,7 +32,7 @@ class MedRAG:
 
         self.tokenizer.chat_template = open('./templates/pmc_llama.jinja').read().replace('    ', '').replace('\n', '')
         
-        available_gpus = [0, 1, 2, 3]
+        available_gpus = [1, 2, 3]
         gpu_memory = [torch.cuda.get_device_properties(i).total_memory - torch.cuda.memory_allocated(i) for i in available_gpus]
         best_gpu = available_gpus[gpu_memory.index(max(gpu_memory))]
 
@@ -42,7 +42,7 @@ class MedRAG:
             cache_dir=self.cache_dir
         ).to(f"cuda:{best_gpu}")
         
-        self.model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])
+        self.model = torch.nn.DataParallel(model, device_ids=[1, 2, 3])
 
         # Using pipeline with DataParallel model
         self.pipeline = transformers.pipeline(

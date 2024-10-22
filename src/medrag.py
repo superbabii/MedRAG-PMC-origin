@@ -31,14 +31,21 @@ class MedRAG:
         self.tokenizer = AutoTokenizer.from_pretrained(self.llm_name, cache_dir=self.cache_dir)
 
         self.tokenizer.chat_template = open('./templates/pmc_llama.jinja').read().replace('    ', '').replace('\n', '')
+        
+        model = transformers.AutoModelForCausalLM.from_pretrained(
+            self.llm_name, 
+            torch_dtype=torch.float16,  # Use float16 for mixed-precision
+            cache_dir=self.cache_dir
+        )
+        
+        self.model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])
 
-        self.model = transformers.pipeline(
+        # Using pipeline with DataParallel model
+        self.pipeline = transformers.pipeline(
             "text-generation",
-            model=self.llm_name,
-            # torch_dtype=torch.float16,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            model_kwargs={"cache_dir":self.cache_dir},
+            model=self.model,
+            tokenizer=self.tokenizer,
+            device_map="auto"
         )
         
         self.follow_up = follow_up

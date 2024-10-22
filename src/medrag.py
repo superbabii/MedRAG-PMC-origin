@@ -32,11 +32,15 @@ class MedRAG:
 
         self.tokenizer.chat_template = open('./templates/pmc_llama.jinja').read().replace('    ', '').replace('\n', '')
         
+        available_gpus = [0, 1, 2, 3]
+        gpu_memory = [torch.cuda.get_device_properties(i).total_memory - torch.cuda.memory_allocated(i) for i in available_gpus]
+        best_gpu = available_gpus[gpu_memory.index(max(gpu_memory))]
+
         model = transformers.AutoModelForCausalLM.from_pretrained(
             self.llm_name, 
             torch_dtype=torch.bfloat16,
             cache_dir=self.cache_dir
-        ).to("cuda:0")
+        ).to(f"cuda:{best_gpu}")
         
         self.model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])
 

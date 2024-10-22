@@ -93,33 +93,39 @@ for question_id, question_data in all_questions:
     # Use MedRAG to generate the answer with a timeout
     # signal.alarm(30)  # Set alarm for 60 seconds
     try:
-        # Use MedRAG to generate the answer, considering shuffled robustness
-        result = cot.medrag_answer(question_data=question_data, shuffle=True, num_shuffles=5)
+        # Use MedRAG to generate the answer
+        answer = cot.medrag_answer(question=question, options=options, k=32)
+        # Debugging: Check the type and raw content of the answer
+        # print(f"Generated Answer (Raw): {answer}")
         
-        # Get the final consistent answer
-        final_answer = result["final_answer"]
-        frequency = result["frequency"]
-        details = result["details"]
+        # Check if the generated answer is a tuple and extract the text
+        if isinstance(answer, tuple):
+            generated_answer_text = answer[0]
+        else:
+            generated_answer_text = answer
+        
+        print(f"Generated Answer: {generated_answer_text}")
+        
+        # Extract the generated answer choice
+        generated_choice = extract_answer_choice(generated_answer_text)
 
-        if not final_answer:
+        if not generated_choice:
             print(f"No valid answer choice extracted for question ID: {question_id}")
             continue
 
         # Compare the generated answer with the correct one
-        is_correct = correct_answer == final_answer
+        is_correct = correct_answer == generated_choice
         if is_correct:
             correct_count += 1
         
-        answered_questions += 1
+        # answered_questions += 1
         
         # Calculate accuracy
-        accuracy = correct_count / answered_questions * 100 if answered_questions > 0 else 0
-        print(f"Generated Answer (Final Consistent): {final_answer}")
+        accuracy = correct_count / number_all_questions * 100 if number_all_questions > 0 else 0
         print(f"Correct Answer: {correct_answer}")
-        print(f"Frequency of Consistency: {frequency}")
         print(f"Is Correct: {is_correct}")
-        print(f"Current Accuracy: {accuracy:.2f}%")
-        print(f"All Questions(Answered Questions): {number_all_questions}({answered_questions})")
+        print(f"Current Accuracy: {accuracy:.2f}%")        
+        print(f"All Questions: {number_all_questions}")
         print('-' * 50)
 
     except TimeoutException:

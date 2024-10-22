@@ -1,0 +1,11 @@
+faiss-cpu
+python-liquid
+langchain
+tqdm
+transformers
+sentence_transformers
+datasets
+blobfile
+protobuf
+sentencepiece
+accelerate

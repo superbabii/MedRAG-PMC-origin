@@ -43,7 +43,7 @@ class MedRAG:
         # Using pipeline with DataParallel model
         self.pipeline = transformers.pipeline(
             "text-generation",
-            model=self.model,
+            model=self.model.module,
             tokenizer=self.tokenizer,
             device_map="auto"
         )

@@ -31,25 +31,14 @@ class MedRAG:
         self.tokenizer = AutoTokenizer.from_pretrained(self.llm_name, cache_dir=self.cache_dir)
 
         self.tokenizer.chat_template = open('./templates/pmc_llama.jinja').read().replace('    ', '').replace('\n', '')
-        
-        available_gpus = [1, 2, 3]
-        gpu_memory = [torch.cuda.get_device_properties(i).total_memory - torch.cuda.memory_allocated(i) for i in available_gpus]
-        best_gpu = available_gpus[gpu_memory.index(max(gpu_memory))]
 
-        model = transformers.AutoModelForCausalLM.from_pretrained(
-            self.llm_name, 
-            torch_dtype=torch.bfloat16,
-            cache_dir=self.cache_dir
-        ).to(f"cuda:{best_gpu}")
-        
-        self.model = torch.nn.DataParallel(model, device_ids=[1, 2, 3])
-
-        # Using pipeline with DataParallel model
-        self.pipeline = transformers.pipeline(
+        self.model = transformers.pipeline(
             "text-generation",
-            model=self.model.module,
-            tokenizer=self.tokenizer,
-            device_map="auto"
+            model=self.llm_name,
+            # torch_dtype=torch.float16,
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            model_kwargs={"cache_dir":self.cache_dir},
         )
         
         self.follow_up = follow_up

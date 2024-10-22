@@ -36,7 +36,7 @@ class MedRAG:
             self.llm_name, 
             torch_dtype=torch.float16,  # Use float16 for mixed-precision
             cache_dir=self.cache_dir
-        )
+        ).to("cuda:0")
         
         self.model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])
 

@@ -94,7 +94,7 @@ for question_id, question_data in all_questions:
     # signal.alarm(30)  # Set alarm for 60 seconds
     try:
         # Use MedRAG to generate the answer
-        answer = cot.medrag_answer(question=question, options=options, k=32)
+        answer = cot.medrag_answer(question=question, options=options)
         # Debugging: Check the type and raw content of the answer
         # print(f"Generated Answer (Raw): {answer}")
         

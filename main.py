@@ -131,3 +131,6 @@ for question_id, question_data in all_questions:
     except TimeoutException:
         print(f"Skipping question ID: {question_id} due to timeout.")
         continue
+    
+print(f"Current Accuracy: {accuracy:.2f}%")        
+print(f"All Questions: {number_all_questions}")

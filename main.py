@@ -19,7 +19,7 @@ all_questions = list(benchmark_data.items())
 # all_questions = all_questions[800:1000]
 
 # Get random questions
-all_questions = random.sample(list(benchmark_data.items()), 10)
+all_questions = random.sample(list(benchmark_data.items()), 100)
 
 # Initialize the MedRAG system
 cot = MedRAG(llm_name="axiong/PMC_LLaMA_13B", rag=False)

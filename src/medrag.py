@@ -34,7 +34,7 @@ class MedRAG:
         
         model = transformers.AutoModelForCausalLM.from_pretrained(
             self.llm_name, 
-            torch_dtype=torch.float16,  # Use float16 for mixed-precision
+            torch_dtype=torch.bfloat16,
             cache_dir=self.cache_dir
         ).to("cuda:0")
         
